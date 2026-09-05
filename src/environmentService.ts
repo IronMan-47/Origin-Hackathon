@@ -17,8 +17,8 @@ export function getWeatherDescription(code: number): string {
   }
 }
 
-const DEFAULT_WAQI_TOKEN = import.meta.env.VITE_WAQI_TOKEN || "ac724915550424c9a4372ed12ebb5c4225bc780e";
-const OWM_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || "54b9099950cb66bb3e4689f2869a3d89";
+const DEFAULT_WAQI_TOKEN = import.meta.env.VITE_WAQI_TOKEN || "";
+const OWM_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || "";
 
 // Fetch live weather from OpenWeatherMap/Backend & Air Quality
 export async function fetchLiveEnvironment(
