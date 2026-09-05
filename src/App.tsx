@@ -215,7 +215,7 @@ export default function App() {
   // 1. Public Landing Page (Unauthenticated Users)
   if (!session) {
     return (
-      <div className={`min-h-screen relative font-sans bg-cover bg-center bg-fixed bg-no-repeat ${isDarkMode ? 'text-slate-100' : 'text-slate-900 light-mode'}`}
+      <div className={`min-h-screen relative font-sans bg-app-wallpaper bg-cover bg-center bg-fixed bg-no-repeat ${isDarkMode ? 'text-slate-100' : 'text-slate-900 light-mode'}`}
            style={{ backgroundImage: `url('${isDarkMode ? '/Bg.png' : '/lbg.png'}')` }}>
         <div className={`absolute inset-0 -z-10 ${isDarkMode ? 'bg-slate-950/40' : 'bg-white/30 backdrop-blur-[2px]'}`}></div>
         <LandingHero 
@@ -377,7 +377,7 @@ export default function App() {
 
   // 3. Authenticated App Shell with Multi-Tab Navigation & Accessibility Controls
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 relative overflow-hidden font-sans bg-cover bg-center bg-fixed bg-no-repeat ${
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 relative overflow-hidden font-sans bg-app-wallpaper bg-cover bg-center bg-fixed bg-no-repeat ${
       isDarkMode ? 'text-slate-100' : 'text-slate-900 light-mode'
     }`} style={{ backgroundImage: `url('${isDarkMode ? '/Bg.png' : '/lbg.png'}')` }}>
       {/* Dynamic overlay to ensure readability */}

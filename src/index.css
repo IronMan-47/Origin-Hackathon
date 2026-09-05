@@ -81,3 +81,32 @@ html, body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
+/* Explicit Background Wallpaper Fallbacks */
+.bg-app-wallpaper {
+  background-image: url('/Bg.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+body.light-mode,
+.light-mode .bg-app-wallpaper,
+div.light-mode {
+  background-image: url('/lbg.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+.animate-float {
+  animation: floatAnim 6s ease-in-out infinite;
+}
+
