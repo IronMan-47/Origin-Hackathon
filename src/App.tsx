@@ -12,7 +12,6 @@ import { fetchLiveEnvironment } from './environmentService';
 import type { EnvironmentalData } from './riskEngine';
 import { translations, type Language } from './translations';
 import { 
-  ShieldCheck, 
   ArrowRight, 
   User, 
   LogOut, 
@@ -40,7 +39,7 @@ export default function App() {
   const [session, setSession] = useState<any>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [_loadingProfile, setLoadingProfile] = useState(false);
   const [isOnboarding, setIsOnboarding] = useState(false);
 
   // Global App States: Navigation Tab, Accessibility Theme & Language

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, AlertTriangle, ShieldCheck, HeartPulse, HelpCircle } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Send, Bot, User, Sparkles, HeartPulse } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
 import { translations, type Language } from './translations';
 import { fetchAIAdvisoryFromBackend } from './apiClient';

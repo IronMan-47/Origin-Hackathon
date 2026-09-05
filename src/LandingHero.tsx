@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   ArrowRight, 
   Play, 
@@ -19,12 +19,9 @@ import {
   X,
   Activity,
   Layers,
-  Zap,
-  Lock,
   ArrowLeftRight,
   TrendingUp,
-  Map,
-  CheckCircle2
+  Map
 } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
 

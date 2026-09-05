@@ -31,7 +31,6 @@ export async function fetchLiveEnvironment(
   let humidity = 60;
   let windSpeed = 10;
   let weatherCode = 0;
-  let weatherDesc = 'Partly cloudy';
   let uvIndex = 5;
 
   // 1. Try OpenWeatherMap Direct API if key is present (use HTTPS to prevent mixed content blocking)
@@ -45,7 +44,6 @@ export async function fetchLiveEnvironment(
         humidity = Math.round(owmRes.main.humidity);
         windSpeed = Math.round((owmRes.wind?.speed ?? 3) * 3.6); // m/s to km/h
         if (owmRes.weather && owmRes.weather[0]) {
-          weatherDesc = owmRes.weather[0].description ? owmRes.weather[0].description.charAt(0).toUpperCase() + owmRes.weather[0].description.slice(1) : 'Partly cloudy';
           weatherCode = owmRes.weather[0].id ?? 800;
         }
       }
@@ -70,7 +68,6 @@ export async function fetchLiveEnvironment(
       humidity = Math.round(weatherRes.current?.relative_humidity_2m ?? 60);
       windSpeed = Math.round(weatherRes.current?.wind_speed_10m ?? 10);
       weatherCode = weatherRes.current?.weather_code ?? 0;
-      weatherDesc = getWeatherDescription(weatherCode);
     }
     uvIndex = weatherRes.current?.uv_index ?? 5;
 
@@ -78,8 +75,6 @@ export async function fetchLiveEnvironment(
     let pm25 = Math.round((aqRes.current?.pm2_5 ?? 45) * 10) / 10;
     let pm10 = Math.round((aqRes.current?.pm10 ?? 70) * 10) / 10;
     let aqiSource: 'waqi' | 'open_meteo' = 'open_meteo';
-    let stationName: string | undefined = undefined;
-    let dominantPollutant: string | undefined = undefined;
 
     // 3. WAQI Ground Station Fetch with provided token
     if (waqiToken && waqiToken.trim() !== '') {
@@ -91,8 +86,6 @@ export async function fetchLiveEnvironment(
           }
           if (waqiRes.data.iaqi?.pm25?.v) pm25 = Math.round(waqiRes.data.iaqi.pm25.v * 10) / 10;
           if (waqiRes.data.iaqi?.pm10?.v) pm10 = Math.round(waqiRes.data.iaqi.pm10.v * 10) / 10;
-          if (waqiRes.data.city?.name) stationName = waqiRes.data.city.name;
-          if (waqiRes.data.dominentpol) dominantPollutant = waqiRes.data.dominentpol.toUpperCase();
           aqiSource = 'waqi';
         }
       } catch (waqiErr) {

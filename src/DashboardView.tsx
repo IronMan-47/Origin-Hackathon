@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Thermometer, 
   Wind, 
   Droplets, 
   Sun, 
   MapPin, 
-  ShieldAlert, 
-  ShieldCheck, 
-  AlertTriangle, 
   Sparkles, 
   Clock, 
   CheckCircle2, 
@@ -19,7 +16,6 @@ import {
   Shield,
   Activity,
   PhoneCall,
-  X,
   Share2,
   Check
 } from 'lucide-react';
@@ -41,7 +37,7 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
   const [riskData, setRiskData] = useState<RiskCalculationResult | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedHour, setSelectedHour] = useState<number>(1); // Default 7 AM
-  const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
+  const [_showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
 
   const lat = profile?.latitude ?? 21.25;

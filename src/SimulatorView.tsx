@@ -17,7 +17,7 @@ interface SimulatorViewProps {
   isDarkMode?: boolean;
 }
 
-export default function SimulatorView({ profile, envData, lang, isDarkMode = true }: SimulatorViewProps) {
+export default function SimulatorView({ profile: _profile, envData, lang, isDarkMode = true }: SimulatorViewProps) {
   const t = translations[lang];
 
   // Simulator Inputs
