@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Map, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Map, MapPin, Search, Navigation, Info, Layers, RefreshCw } from 'lucide-react';
 import { translations, type Language } from './translations';
 import { fetchLiveEnvironment } from './environmentService';
 import type { EnvironmentalData } from './riskEngine';
@@ -39,7 +39,7 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
   });
 
   const [pointData, setPointData] = useState<EnvironmentalData | null>(null);
-  const [_loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 

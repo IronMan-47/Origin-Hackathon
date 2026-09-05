@@ -12,6 +12,7 @@ import { fetchLiveEnvironment } from './environmentService';
 import type { EnvironmentalData } from './riskEngine';
 import { translations, type Language } from './translations';
 import { 
+  ShieldCheck, 
   ArrowRight, 
   User, 
   LogOut, 
@@ -39,7 +40,7 @@ export default function App() {
   const [session, setSession] = useState<any>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [_loadingProfile, setLoadingProfile] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
   const [isOnboarding, setIsOnboarding] = useState(false);
 
   // Global App States: Navigation Tab, Accessibility Theme & Language
@@ -201,9 +202,10 @@ export default function App() {
 
   if (checkingSession) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center space-y-4 font-sans ${
-        isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
-      }`}>
+      <div className={`min-h-screen flex flex-col items-center justify-center space-y-4 font-sans bg-cover bg-center bg-fixed bg-no-repeat ${
+        isDarkMode ? 'text-slate-100' : 'text-slate-900'
+      }`} style={{ backgroundImage: `url('${isDarkMode ? '/Bg.png' : '/lbg.png'}')` }}>
+        <div className={`absolute inset-0 -z-10 ${isDarkMode ? 'bg-slate-950/60' : 'bg-white/40'}`}></div>
         <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         <p className="text-sm font-semibold tracking-wide animate-pulse">Initializing WeatherWise Medical Telemetry Engine...</p>
       </div>
@@ -213,7 +215,9 @@ export default function App() {
   // 1. Public Landing Page (Unauthenticated Users)
   if (!session) {
     return (
-      <div className={`min-h-screen relative font-sans ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900 light-mode'}`}>
+      <div className={`min-h-screen relative font-sans bg-cover bg-center bg-fixed bg-no-repeat ${isDarkMode ? 'text-slate-100' : 'text-slate-900 light-mode'}`}
+           style={{ backgroundImage: `url('${isDarkMode ? '/Bg.png' : '/lbg.png'}')` }}>
+        <div className={`absolute inset-0 -z-10 ${isDarkMode ? 'bg-slate-950/40' : 'bg-white/30 backdrop-blur-[2px]'}`}></div>
         <LandingHero 
           currentPage={publicPage}
           onNavigate={setPublicPage}
@@ -221,6 +225,7 @@ export default function App() {
           onSignIn={() => setShowAuthModal(true)}
           liveData={envTelemetry}
           userLocationName="Raipur, Chhattisgarh"
+          isDarkMode={isDarkMode}
         />
 
         {/* Modal Auth Dialog */}
@@ -372,9 +377,11 @@ export default function App() {
 
   // 3. Authenticated App Shell with Multi-Tab Navigation & Accessibility Controls
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 relative overflow-hidden font-sans ${
-      isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900 light-mode'
-    }`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 relative overflow-hidden font-sans bg-cover bg-center bg-fixed bg-no-repeat ${
+      isDarkMode ? 'text-slate-100' : 'text-slate-900 light-mode'
+    }`} style={{ backgroundImage: `url('${isDarkMode ? '/Bg.png' : '/lbg.png'}')` }}>
+      {/* Dynamic overlay to ensure readability */}
+      <div className={`absolute inset-0 -z-10 ${isDarkMode ? 'bg-slate-950/40' : 'bg-white/30'}`}></div>
       {/* Ambient Flowing Background Mesh */}
       <div className="ambient-glow-1"></div>
       <div className="ambient-glow-2"></div>
@@ -566,6 +573,7 @@ export default function App() {
             onSignIn={() => setActiveTab('dashboard')}
             liveData={envTelemetry}
             userLocationName={profile?.location_name || "Raipur, Chhattisgarh"}
+            isDarkMode={isDarkMode}
           />
         )}
 

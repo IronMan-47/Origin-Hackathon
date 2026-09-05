@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, Clock, Calendar, AlertCircle } from 'lucide-react';
 import { translations, type Language } from './translations';
 

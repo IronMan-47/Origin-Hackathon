@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   ArrowRight, 
   Play, 
@@ -19,9 +19,12 @@ import {
   X,
   Activity,
   Layers,
+  Zap,
+  Lock,
   ArrowLeftRight,
   TrendingUp,
-  Map
+  Map,
+  CheckCircle2
 } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
 
@@ -34,6 +37,7 @@ interface LandingHeroProps {
   onSignIn: () => void;
   liveData: EnvironmentalData | null;
   userLocationName: string;
+  isDarkMode?: boolean;
 }
 
 export default function LandingHero({ 
@@ -42,7 +46,8 @@ export default function LandingHero({
   onGetStarted, 
   onSignIn, 
   liveData, 
-  userLocationName 
+  userLocationName,
+  isDarkMode = true
 }: LandingHeroProps) {
   const [showVideoModal, setShowVideoModal] = useState(false);
 
@@ -53,7 +58,7 @@ export default function LandingHero({
   const isGood = aqi <= 50;
 
   return (
-    <div className="min-h-screen w-full bg-[#060b14] text-slate-100 relative overflow-x-hidden font-sans select-none flex flex-col justify-between">
+    <div className="min-h-screen w-full bg-transparent text-slate-100 relative overflow-x-hidden font-sans select-none flex flex-col justify-between">
       
       {/* Cinematic Background Glow Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -62,14 +67,14 @@ export default function LandingHero({
       </div>
 
       {/* Top Navbar */}
-      <header className="relative z-30 w-full px-6 md:px-16 lg:px-24 h-20 flex items-center justify-between border-b border-white/5 bg-[#060b14]/70 backdrop-blur-md sticky top-0">
+      <header className={`relative z-30 w-full px-6 md:px-16 lg:px-24 h-20 flex items-center justify-between border-b backdrop-blur-md sticky top-0 ${isDarkMode ? 'border-white/5 bg-[#060b14]/70' : 'border-slate-200/50 bg-white/70'}`}>
         
         {/* Brand */}
         <div onClick={() => onNavigate('home')} className="flex items-center gap-3 cursor-pointer">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
             <CloudSun className="w-4 h-4 text-white" />
           </div>
-          <span className="text-xl font-extrabold tracking-tight text-white">
+          <span className={`text-xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             WeatherWise<span className="text-cyan-400">.</span>
           </span>
         </div>
@@ -78,25 +83,25 @@ export default function LandingHero({
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold">
           <button 
             onClick={() => onNavigate('home')} 
-            className={`transition-colors ${currentPage === 'home' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'}`}
+            className={`transition-colors ${currentPage === 'home' ? 'text-cyan-400 font-bold' : (isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900')}`}
           >
             Home
           </button>
           <button 
             onClick={() => onNavigate('features')} 
-            className={`transition-colors ${currentPage === 'features' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'}`}
+            className={`transition-colors ${currentPage === 'features' ? 'text-cyan-400 font-bold' : (isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900')}`}
           >
             Features
           </button>
           <button 
             onClick={() => onNavigate('how-it-works')} 
-            className={`transition-colors ${currentPage === 'how-it-works' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'}`}
+            className={`transition-colors ${currentPage === 'how-it-works' ? 'text-cyan-400 font-bold' : (isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900')}`}
           >
             How It Works
           </button>
           <button 
             onClick={() => onNavigate('about')} 
-            className={`transition-colors ${currentPage === 'about' ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:text-white'}`}
+            className={`transition-colors ${currentPage === 'about' ? 'text-cyan-400 font-bold' : (isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900')}`}
           >
             About
           </button>
@@ -106,7 +111,7 @@ export default function LandingHero({
         <div className="flex items-center gap-4">
           <button 
             onClick={onSignIn}
-            className="text-xs font-bold text-slate-300 hover:text-white transition-colors"
+            className={`text-xs font-bold transition-colors ${isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             Sign in
           </button>
@@ -135,14 +140,14 @@ export default function LandingHero({
                   <span>Personalized Environmental Intelligence</span>
                 </div>
 
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]">
+                <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                   Weather that <br />
-                  <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+                  <span className={`bg-gradient-to-r bg-clip-text text-transparent ${isDarkMode ? 'from-blue-400 via-cyan-300 to-indigo-300' : 'from-blue-500 via-cyan-400 to-indigo-500'}`}>
                     understands you.
                   </span>
                 </h1>
 
-                <p className="text-slate-400 text-base md:text-lg max-w-xl leading-relaxed">
+                <p className={`text-base md:text-lg max-w-xl leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                   WeatherWise combines real-time weather, air quality ($PM_{2.5}$), your unique health context, and clinical AI to explain exactly how the environment affects you personally.
                 </p>
 
@@ -157,7 +162,11 @@ export default function LandingHero({
 
                   <button
                     onClick={() => setShowVideoModal(true)}
-                    className="flex items-center gap-2.5 px-6 py-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white font-semibold text-sm backdrop-blur transition-all"
+                    className={`flex items-center gap-2.5 px-6 py-4 rounded-2xl border font-semibold text-sm backdrop-blur transition-all ${
+                      isDarkMode 
+                        ? 'bg-slate-900/80 hover:bg-slate-800 border-slate-700/80 text-slate-200 hover:text-white' 
+                        : 'bg-white/60 hover:bg-white/80 border-slate-300/60 text-slate-700 hover:text-slate-900'
+                    }`}
                   >
                     <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
                       <Play className="w-3 h-3 fill-current ml-0.5" />
@@ -207,22 +216,22 @@ export default function LandingHero({
                   <div className="text-cyan-400 text-lg">⤷</div>
                 </div>
 
-                <div className="w-full max-w-lg bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[32px] p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] relative overflow-hidden space-y-6">
+                <div className={`w-full max-w-lg backdrop-blur-2xl border rounded-[32px] p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] relative overflow-hidden space-y-6 ${isDarkMode ? 'bg-slate-900/60 border-white/10' : 'bg-white/70 border-slate-200/90'}`}>
                   <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-1.5 text-amber-300 text-xs font-medium mb-1">
-                        <Sun className="w-3.5 h-3.5" /> Good day,
+                        <Sun className={`w-3.5 h-3.5 ${isDarkMode ? 'text-amber-300' : 'text-amber-500'}`} /> <span className={isDarkMode ? 'text-amber-300' : 'text-amber-600'}>Good day,</span>
                       </div>
-                      <h3 className="text-2xl font-black text-white tracking-tight">Alex</h3>
-                      <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
+                      <h3 className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Alex</h3>
+                      <div className="flex items-center gap-1 text-xs mt-0.5 text-slate-500">
                         <MapPin className="w-3.5 h-3.5 text-cyan-400" />
                         <span>{userLocationName || "New York, USA"}</span>
                       </div>
                     </div>
 
-                    <div className="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400">
+                    <div className={`w-8 h-8 rounded-full border flex items-center justify-center ${isDarkMode ? 'bg-slate-800/80 border-slate-700/60 text-slate-400' : 'bg-slate-100/60 border-slate-200 text-slate-500'}`}>
                       <span className="text-xs">•••</span>
                     </div>
                   </div>
@@ -232,7 +241,7 @@ export default function LandingHero({
                       <div className="relative w-32 h-32 flex items-center justify-center">
                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                           <path
-                            className="text-slate-800"
+                            className={isDarkMode ? "text-slate-800" : "text-slate-200"}
                             strokeWidth="3.2"
                             stroke="currentColor"
                             fill="none"
@@ -327,49 +336,49 @@ export default function LandingHero({
             </div>
 
             {/* Pipeline Section */}
-            <div className="w-full bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 rounded-[32px] p-8 md:p-10 shadow-2xl">
+            <div className={`w-full backdrop-blur-xl border rounded-[32px] p-8 md:p-10 shadow-2xl ${isDarkMode ? 'bg-slate-900/50 border-slate-800/80' : 'bg-white/70 border-slate-200/90'}`}>
               <div className="mb-8">
-                <span className="text-[11px] uppercase font-black tracking-widest text-cyan-400">How It Works</span>
-                <h2 className="text-xl md:text-2xl font-black text-white mt-1">From environment data to personal insight</h2>
+                <span className={`text-[11px] uppercase font-black tracking-widest ${isDarkMode ? 'text-cyan-400' : 'text-blue-600'}`}>How It Works</span>
+                <h2 className={`text-xl md:text-2xl font-black mt-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>From environment data to personal insight</h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                  <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${isDarkMode ? 'bg-blue-600/20 border-blue-500/30 text-blue-400' : 'bg-blue-100 border-blue-200 text-blue-600'}`}>
                     <CloudSun className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-white">1. Environment Data</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>1. Environment Data</h4>
+                  <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                     Real-time weather, particulate air quality ($PM_{2.5}$), UV, and satellite models at your location.
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                  <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${isDarkMode ? 'bg-cyan-600/20 border-cyan-500/30 text-cyan-400' : 'bg-cyan-100 border-cyan-200 text-cyan-600'}`}>
                     <UserCheck className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-white">2. Your Profile</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>2. Your Profile</h4>
+                  <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                     Age, health context (Asthma, COPD, Cardio), occupation, and exposure sensitivity.
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                  <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${isDarkMode ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-400' : 'bg-indigo-100 border-indigo-200 text-indigo-600'}`}>
                     <Brain className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-white">3. Personal Risk</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>3. Personal Risk</h4>
+                  <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                     A deterministic risk score that reflects what these conditions mean for you.
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                  <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${isDarkMode ? 'bg-purple-600/20 border-purple-500/30 text-purple-400' : 'bg-purple-100 border-purple-200 text-purple-600'}`}>
                     <Sparkles className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-white">4. AI Explanation</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>4. AI Explanation</h4>
+                  <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                     Clear, actionable advice powered by AI — explaining why and what to do.
                   </p>
                 </div>

@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Activity, 
   ShieldCheck, 
   Clock, 
   Zap, 
+  Sparkles, 
   Wind, 
+  HeartPulse, 
+  AlertTriangle,
+  CheckCircle2,
   Sliders
 } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
@@ -17,7 +21,7 @@ interface SimulatorViewProps {
   isDarkMode?: boolean;
 }
 
-export default function SimulatorView({ profile: _profile, envData, lang, isDarkMode = true }: SimulatorViewProps) {
+export default function SimulatorView({ profile, envData, lang, isDarkMode = true }: SimulatorViewProps) {
   const t = translations[lang];
 
   // Simulator Inputs

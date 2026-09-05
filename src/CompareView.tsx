@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeftRight, 
   MapPin, 
   Search, 
+  Thermometer, 
+  Wind, 
+  Droplets, 
+  ShieldCheck, 
+  ShieldAlert, 
+  CheckCircle2, 
+  AlertTriangle,
   Sparkles
 } from 'lucide-react';
 import { calculatePersonalRisk } from './riskEngine';
@@ -20,9 +27,9 @@ export default function CompareView({ profile, lang, isDarkMode = true }: Compar
   const t = translations[lang];
 
   // City A (Default to User's primary residence)
-  const [cityAName, _setCityAName] = useState(profile?.location_name || 'Raipur, Chhattisgarh');
-  const [cityALat, _setCityALat] = useState(profile?.latitude ?? 21.25);
-  const [cityALon, _setCityALon] = useState(profile?.longitude ?? 81.63);
+  const [cityAName, setCityAName] = useState(profile?.location_name || 'Raipur, Chhattisgarh');
+  const [cityALat, setCityALat] = useState(profile?.latitude ?? 21.25);
+  const [cityALon, setCityALon] = useState(profile?.longitude ?? 81.63);
   const [dataA, setDataA] = useState<EnvironmentalData | null>(null);
 
   // City B (Default destination comparison, e.g. Delhi)

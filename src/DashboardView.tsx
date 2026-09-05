@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Thermometer, 
   Wind, 
   Droplets, 
   Sun, 
   MapPin, 
+  ShieldAlert, 
+  ShieldCheck, 
+  AlertTriangle, 
   Sparkles, 
   Clock, 
   CheckCircle2, 
@@ -16,6 +19,7 @@ import {
   Shield,
   Activity,
   PhoneCall,
+  X,
   Share2,
   Check
 } from 'lucide-react';
@@ -37,7 +41,7 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
   const [riskData, setRiskData] = useState<RiskCalculationResult | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedHour, setSelectedHour] = useState<number>(1); // Default 7 AM
-  const [_showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
+  const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
 
   const lat = profile?.latitude ?? 21.25;
@@ -137,12 +141,12 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
   };
 
   const cardBase = isDarkMode 
-    ? 'bg-slate-900/90 border-slate-800 text-white shadow-xl' 
-    : 'bg-white/95 border-slate-200/90 text-slate-900 shadow-xl shadow-slate-200/50 backdrop-blur-md';
+    ? 'bg-slate-900/40 border-slate-700/50 text-white shadow-2xl backdrop-blur-xl' 
+    : 'bg-white/70 border-slate-200/90 text-slate-900 shadow-2xl shadow-slate-200/50 backdrop-blur-xl';
 
-  const cardSubtext = isDarkMode ? 'text-slate-400' : 'text-slate-600';
+  const cardSubtext = isDarkMode ? 'text-slate-300' : 'text-slate-600';
   const cardHeading = isDarkMode ? 'text-white' : 'text-slate-900';
-  const innerBox = isDarkMode ? 'bg-slate-800/80 border-slate-700/80' : 'bg-slate-100/90 border-slate-200';
+  const innerBox = isDarkMode ? 'bg-slate-800/40 border-slate-700/50 backdrop-blur-md' : 'bg-slate-100/60 border-slate-200 backdrop-blur-md';
 
   return (
     <div className="max-w-6xl w-full mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
@@ -150,8 +154,8 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
       {/* Top Banner: User Context & Live Geolocation Anchor */}
       <div className={`border rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden transition-all hover:-translate-y-0.5 duration-300 ${
         isDarkMode 
-          ? 'bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border-slate-800' 
-          : 'bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 border-slate-700 text-white'
+          ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white' 
+          : 'bg-white/70 backdrop-blur-xl border-slate-200/90 text-slate-900'
       }`}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
@@ -159,19 +163,19 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
               {t.liveTelemetrySync}
             </div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">
+            <h1 className={`text-3xl md:text-4xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
               Good day, {profile?.display_name || 'User'}
             </h1>
-            <div className="flex items-center gap-2 text-xs md:text-sm text-slate-300 mt-2 flex-wrap font-medium">
-              <span className="flex items-center gap-1 text-white font-semibold bg-slate-800/90 px-3 py-1 rounded-full border border-slate-700">
+            <div className={`flex items-center gap-2 text-xs md:text-sm mt-2 flex-wrap font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+              <span className={`flex items-center gap-1 font-semibold px-3 py-1 rounded-full border ${isDarkMode ? 'text-white bg-slate-800/90 border-slate-700' : 'text-slate-100 bg-slate-800/80 border-slate-700'}`}>
                 <MapPin className="w-3.5 h-3.5 text-blue-400" /> {locationName}
               </span>
               <span>•</span>
-              <span>Age: <strong className="text-white">{profile?.age || '25'}</strong></span>
+              <span>Age: <strong className={isDarkMode ? 'text-white' : 'text-black'}>{profile?.age || '25'}</strong></span>
               <span>•</span>
-              <span>Routine: <strong className="text-white">{profile?.occupation?.replace('_', ' ') || 'General'}</strong></span>
+              <span>Routine: <strong className={isDarkMode ? 'text-white' : 'text-black'}>{profile?.occupation?.replace('_', ' ') || 'General'}</strong></span>
               <span>•</span>
-              <span className="text-slate-400">Updated at {lastUpdated}</span>
+              <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'}>Updated at {lastUpdated}</span>
             </div>
           </div>
 

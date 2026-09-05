@@ -9,7 +9,9 @@ import {
   ArrowLeft, 
   Search, 
   ShieldCheck,
+  Sparkles,
   ChevronRight,
+  Info,
   X
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
@@ -90,12 +92,13 @@ export default function Onboarding({ userId, initialName = '', isDarkMode = true
   const [locationName, setLocationName] = useState('Raipur, Chhattisgarh');
   const [latitude, setLatitude] = useState(21.25);
   const [longitude, setLongitude] = useState(81.63);
-  const [_locationSearching, setLocationSearching] = useState(false);
+  const [locationSearching, setLocationSearching] = useState(false);
   const [locationQuery, setLocationQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
   // Medical conditions
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [medicalSearchQuery, setMedicalSearchQuery] = useState('');
 
   // Occupation
   const [occupation, setOccupation] = useState('indoor_office');
