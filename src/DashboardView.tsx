@@ -179,6 +179,15 @@ export default function DashboardView({ profile, onRecalibrate, lang = 'en', isD
             </div>
           </div>
 
+          {/* Earth Telemetry Globe Graphic */}
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <img 
+              src="/hero.png" 
+              alt="Earth Atmospheric Telemetry Globe" 
+              className="w-20 h-20 md:w-24 md:h-24 object-contain filter drop-shadow-[0_10px_20px_rgba(59,130,246,0.5)] hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+
           <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setShowEmergencyModal(true)}

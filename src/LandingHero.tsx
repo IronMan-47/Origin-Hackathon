@@ -219,6 +219,16 @@ export default function LandingHero({
                 <div className={`w-full max-w-lg backdrop-blur-2xl border rounded-[32px] p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] relative overflow-hidden space-y-6 ${isDarkMode ? 'bg-slate-900/60 border-white/10' : 'bg-white/70 border-slate-200/90'}`}>
                   <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
+                  {/* Floating 3D Earth Telemetry Globe */}
+                  <div className="relative flex items-center justify-center -mt-2 -mb-2">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 via-cyan-400/20 to-purple-500/20 rounded-full blur-2xl animate-pulse" />
+                    <img 
+                      src="/hero.png" 
+                      alt="Earth Atmospheric Telemetry Globe" 
+                      className="w-44 h-44 object-contain relative z-10 filter drop-shadow-[0_15px_30px_rgba(14,165,233,0.5)] hover:scale-105 transition-all duration-500"
+                    />
+                  </div>
+
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-1.5 text-amber-300 text-xs font-medium mb-1">
