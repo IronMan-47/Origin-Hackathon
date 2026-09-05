@@ -9,9 +9,7 @@ import {
   ArrowLeft, 
   Search, 
   ShieldCheck,
-  Sparkles,
   ChevronRight,
-  Info,
   X
 } from 'lucide-react';
 import { supabase } from './supabaseClient';

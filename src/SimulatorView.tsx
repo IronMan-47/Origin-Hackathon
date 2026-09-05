@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Activity, 
   ShieldCheck, 
   Clock, 
   Zap, 
-  Sparkles, 
   Wind, 
-  HeartPulse, 
-  AlertTriangle,
-  CheckCircle2,
   Sliders
 } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
