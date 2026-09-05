@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Send, Bot, User, Sparkles, AlertTriangle, ShieldCheck, HeartPulse, HelpCircle } from 'lucide-react';
 import type { EnvironmentalData } from './riskEngine';
 import { translations, type Language } from './translations';
-import { fetchAIAdvisoryFromBackend } from './apiClient';
 
 interface Message {
   id: string;
@@ -15,7 +14,6 @@ interface AdvisorChatProps {
   profile: any;
   envData: EnvironmentalData | null;
   lang: Language;
-  isDarkMode?: boolean;
 }
 
 const QUICK_PROMPTS = [
@@ -26,9 +24,8 @@ const QUICK_PROMPTS = [
   "How will current humidity affect my breathing?"
 ];
 
-export default function AdvisorChat({ profile, envData, lang, isDarkMode = true }: AdvisorChatProps) {
+export default function AdvisorChat({ profile, envData, lang }: AdvisorChatProps) {
   const t = translations[lang];
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -40,20 +37,13 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
-
   // Intelligent context-based response generator (Zero hallucination, deterministic safety)
   const generateResponse = (userPrompt: string): string => {
     const pLower = userPrompt.toLowerCase();
     const aqi = envData?.aqi ?? 150;
     const temp = envData?.feelsLike ?? 34;
     const isAsthma = profile?.medical_conditions?.some((c: string) => c.toLowerCase().includes('asthma'));
+    const isOutdoor = profile?.occupation === 'outdoor_worker' || profile?.occupation === 'delivery_transport';
 
     if (pLower.includes('run') || pLower.includes('jog') || pLower.includes('workout') || pLower.includes('exercise')) {
       if (aqi > 130) {
@@ -79,7 +69,7 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
     return `Based on live telemetry in ${profile?.location_name || 'your area'} (AQI: ${aqi}, Feels Like: ${temp}°C) and your profile (${profile?.medical_conditions?.join(', ') || 'No pre-existing conditions'}), current exposure risk is rated ${aqi > 150 ? 'HIGH' : 'MODERATE'}. Proactively hydrate, minimize prolonged outdoor exertion during the afternoon peak, and ensure protective respiratory gear is worn if working outdoors.`;
   };
 
-  const handleSendMessage = async (textToSend?: string) => {
+  const handleSendMessage = (textToSend?: string) => {
     const text = textToSend || inputValue;
     if (!text.trim()) return;
 
@@ -94,31 +84,8 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
     if (!textToSend) setInputValue('');
     setIsTyping(true);
 
-    try {
-      // Attempt live backend AI advisory pipeline call
-      const backendRes = await fetchAIAdvisoryFromBackend({
-        lat: profile?.latitude ?? 28.6139,
-        lng: profile?.longitude ?? 77.2090,
-        user_profile: {
-          age_group: profile?.age_group || 'adult',
-          health_conditions: profile?.medical_conditions || ['asthma'],
-          occupation: profile?.occupation || 'outdoor_worker'
-        },
-        user_question: text
-      });
-
-      let responseText = '';
-      if (backendRes && backendRes.advisory && backendRes.advisory.summary) {
-        const adv = backendRes.advisory;
-        responseText = adv.summary;
-        if (Array.isArray(adv.recommended_actions) && adv.recommended_actions.length > 0) {
-          const actionItems = adv.recommended_actions.map((a: string) => `• ${a}`).join('\n');
-          responseText += `\n\n💡 Key Recommendations:\n${actionItems}`;
-        }
-      } else {
-        responseText = generateResponse(text);
-      }
-
+    setTimeout(() => {
+      const responseText = generateResponse(text);
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'assistant',
@@ -126,61 +93,45 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, botMsg]);
-    } catch (err) {
-      console.warn("Backend call failed, using deterministic response:", err);
-      const botMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'assistant',
-        text: generateResponse(text),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, botMsg]);
-    } finally {
       setIsTyping(false);
-    }
+    }, 600);
   };
-
-  const cardBase = isDarkMode 
-    ? 'bg-slate-900/90 border-slate-800 text-white shadow-xl' 
-    : 'bg-white/95 border-slate-200 text-slate-900 shadow-xl shadow-slate-200/50 backdrop-blur-md';
 
   return (
     <div className="max-w-4xl w-full mx-auto space-y-6 animate-in fade-in duration-500">
       
       {/* Header Banner */}
-      <div className={`border rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl transition-all duration-300 hover:-translate-y-0.5 ${cardBase}`}>
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">
             <Sparkles className="w-4 h-4" /> Medical Environmental Intelligence
           </div>
-          <h2 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{t.navAdvisor}</h2>
-          <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <h2 className="text-2xl font-black text-white">AI Health Advisor Chat</h2>
+          <p className="text-xs text-slate-400 mt-1">
             Real-time personalized guidance combining your health context with live atmospheric telemetry.
           </p>
         </div>
 
-        <div className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs ${
-          isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'
-        }`}>
-          <HeartPulse className="w-4 h-4 text-red-500" />
-          <span className={`font-semibold truncate max-w-[200px] ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+        <div className="flex items-center gap-2 bg-slate-950 px-3.5 py-2 rounded-2xl border border-slate-800 text-xs">
+          <HeartPulse className="w-4 h-4 text-red-400" />
+          <span className="text-slate-300 font-medium truncate max-w-[200px]">
             Context: {profile?.medical_conditions?.join(', ') || 'General'}
           </span>
         </div>
       </div>
 
       {/* Chat Messages Container */}
-      <div className={`border rounded-3xl p-6 min-h-[460px] max-h-[560px] flex flex-col justify-between shadow-2xl backdrop-blur ${cardBase}`}>
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 min-h-[460px] max-h-[560px] flex flex-col justify-between shadow-2xl backdrop-blur">
         
         {/* Messages List */}
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-slate-700">
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-500 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
                   <Bot className="w-4 h-4" />
                 </div>
               )}
@@ -189,23 +140,17 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
                 className={`max-w-[80%] rounded-2xl p-4 text-xs md:text-sm leading-relaxed ${
                   msg.sender === 'user'
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                    : isDarkMode
-                    ? 'bg-slate-800 border border-slate-700 text-slate-100'
-                    : 'bg-slate-100 border border-slate-200 text-slate-900'
+                    : 'bg-slate-800 border border-slate-700/80 text-slate-200'
                 }`}
               >
                 <p>{msg.text}</p>
-                <span className={`block text-[10px] mt-2 ${
-                  msg.sender === 'user' ? 'text-blue-200' : isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                }`}>
+                <span className={`block text-[10px] mt-2 ${msg.sender === 'user' ? 'text-blue-200' : 'text-slate-500'}`}>
                   {msg.timestamp}
                 </span>
               </div>
 
               {msg.sender === 'user' && (
-                <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                  isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-200 border-slate-300 text-slate-700'
-                }`}>
+                <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center shrink-0 mt-0.5">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -213,29 +158,24 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
           ))}
 
           {isTyping && (
-            <div className="flex items-center gap-2 text-xs text-blue-500 font-semibold">
-              <div className="w-6 h-6 rounded-full bg-blue-600/20 text-blue-500 flex items-center justify-center">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className="w-6 h-6 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center">
                 <Bot className="w-3.5 h-3.5" />
               </div>
               <span className="italic">Advisor is analyzing telemetry & clinical risk...</span>
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Quick Action Prompts */}
-        <div className={`mt-4 pt-3 border-t ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+        <div className="mt-4 pt-3 border-t border-slate-800/80">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {QUICK_PROMPTS.map((prompt, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendMessage(prompt)}
-                className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border shrink-0 transition-all ${
-                  isDarkMode 
-                    ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700' 
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border-slate-300'
-                }`}
+                className="text-[11px] font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-full border border-slate-700/70 shrink-0 transition-colors"
               >
                 {prompt}
               </button>
@@ -255,17 +195,11 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.chatPlaceholder}
-              aria-label="Ask Advisor input field"
-              className={`flex-1 px-4 py-3 border rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode 
-                  ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500' 
-                  : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
-              }`}
+              className="flex-1 px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isTyping}
-              aria-label="Send message to Advisor"
               className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/20 transition-all"
             >
               <Send className="w-4 h-4" />
@@ -275,7 +209,7 @@ export default function AdvisorChat({ profile, envData, lang, isDarkMode = true 
 
       </div>
 
-      <p className={`text-center text-[11px] ${isDarkMode ? 'text-slate-500' : 'text-slate-600'}`}>
+      <p className="text-center text-[11px] text-slate-500">
         Clinical Safety Boundary: WeatherWise provides exposure guidance based on atmospheric data. It does not replace prescription advice from your physician.
       </p>
 

@@ -13,7 +13,6 @@ declare global {
 interface MapExplorerProps {
   profile: any;
   lang: Language;
-  isDarkMode?: boolean;
 }
 
 const GLOBAL_HUBS = [
@@ -26,7 +25,7 @@ const GLOBAL_HUBS = [
   { name: "New York, USA", lat: 40.7128, lon: -74.0060 }
 ];
 
-export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExplorerProps) {
+export default function MapExplorer({ profile, lang }: MapExplorerProps) {
   const t = translations[lang];
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -62,7 +61,7 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
       setPointData(data);
       if (markerRef.current) {
         const popupHtml = `
-          <div style="font-family: 'Plus Jakarta Sans', system-ui; min-width: 140px;">
+          <div style="font-family: system-ui; min-width: 140px;">
             <div style="font-weight: 800; font-size: 13px; color: #0f172a;">${name}</div>
             <div style="margin-top: 4px; font-size: 12px; color: ${data.aqi > 150 ? '#ef4444' : '#10b981'}; font-weight: 700;">
               AQI: ${data.aqi} (${data.aqiCategory})
@@ -92,13 +91,9 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
       // Create map
       const map = window.L.map(mapContainerRef.current).setView([initialLat, initialLon], 9);
 
-      // Tile layer matching mode
-      const tileUrl = isDarkMode
-        ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-      window.L.tileLayer(tileUrl, {
-        attribution: '&copy; OpenStreetMap contributors',
+      // Add CartoDB Dark Matter tiles (sleek dark aesthetic matching WeatherWise)
+      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19
       }).addTo(map);
@@ -111,6 +106,7 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
       // Click anywhere on map to inspect coordinates!
       map.on('click', async (e: any) => {
         const { lat, lng } = e.latlng;
+        // Reverse geocoding or coordinate lookup
         fetchCoordsData(lat, lng, `Coord (${lat.toFixed(3)}, ${lng.toFixed(3)})`);
       });
 
@@ -141,26 +137,18 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
     }
   };
 
-  const cardBase = isDarkMode 
-    ? 'bg-slate-900/90 border-slate-800 text-white shadow-xl' 
-    : 'bg-white/95 border-slate-200 text-slate-900 shadow-xl shadow-slate-200/50 backdrop-blur-md';
-
-  const cardSubtext = isDarkMode ? 'text-slate-400' : 'text-slate-600';
-  const cardHeading = isDarkMode ? 'text-white' : 'text-slate-900';
-  const innerTile = isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200';
-
   return (
     <div className="max-w-5xl w-full mx-auto space-y-6 animate-in fade-in duration-500">
       
       {/* Header */}
-      <div className={`border rounded-3xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:-translate-y-0.5 transition-all duration-300 ${cardBase}`}>
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">
             <Map className="w-4 h-4" /> Global Geospatial Live Map
           </div>
-          <h2 className={`text-2xl md:text-3xl font-black ${cardHeading}`}>{t.explorerTitle}</h2>
-          <p className={`text-xs md:text-sm mt-1 ${cardSubtext}`}>
-            {t.explorerSubtitle}
+          <h2 className="text-2xl md:text-3xl font-black text-white">{t.navExplorer}</h2>
+          <p className="text-xs md:text-sm text-slate-400 mt-1">
+            Interactive OpenStreetMap & Open-Meteo visual canvas. Click anywhere on earth or search below to inspect live environmental metrics.
           </p>
         </div>
 
@@ -170,11 +158,7 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
             <button
               key={idx}
               onClick={() => fetchCoordsData(hub.lat, hub.lon, hub.name)}
-              className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-colors ${
-                isDarkMode 
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700' 
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border-slate-300'
-              }`}
+              className="text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-full border border-slate-700 transition-colors"
             >
               {hub.name.split(',')[0]}
             </button>
@@ -183,7 +167,7 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
       </div>
 
       {/* Interactive Global Canvas Container */}
-      <div className={`border rounded-3xl p-6 shadow-2xl relative hover:-translate-y-0.5 transition-all duration-300 ${cardBase}`}>
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
         
         {/* Search Bar overlay */}
         <div className="relative z-20 max-w-md mb-4">
@@ -193,20 +177,13 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              aria-label="Search map locations"
-              className={`w-full pl-10 pr-4 py-2.5 border rounded-2xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-xl ${
-                isDarkMode 
-                  ? 'bg-slate-950 border-slate-700 text-white placeholder-slate-500' 
-                  : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
-              }`}
+              placeholder="Search any coordinate, city or town..."
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-xl"
             />
           </div>
 
           {searchResults.length > 0 && (
-            <div className={`absolute top-full left-0 right-0 mt-1.5 border rounded-2xl shadow-2xl z-30 overflow-hidden ${
-              isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-300'
-            }`}>
+            <div className="absolute top-full left-0 right-0 mt-1.5 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl z-30 overflow-hidden">
               {searchResults.map((item, i) => (
                 <button
                   key={i}
@@ -216,11 +193,9 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
                     setSearchResults([]);
                     setSearchQuery('');
                   }}
-                  className={`w-full text-left px-4 py-2.5 text-xs flex justify-between border-b last:border-none ${
-                    isDarkMode ? 'hover:bg-slate-700 border-slate-700/50 text-white' : 'hover:bg-slate-100 border-slate-200 text-slate-900'
-                  }`}
+                  className="w-full text-left px-4 py-2.5 text-xs hover:bg-slate-700 flex justify-between border-b border-slate-700/50 last:border-none"
                 >
-                  <span className="font-semibold">{item.name}</span>
+                  <span className="font-semibold text-white">{item.name}</span>
                   <span className="text-slate-400">{item.country}</span>
                 </button>
               ))}
@@ -231,47 +206,45 @@ export default function MapExplorer({ profile, lang, isDarkMode = true }: MapExp
         {/* Real Leaflet Map Container */}
         <div 
           ref={mapContainerRef} 
-          className="w-full h-96 rounded-2xl border border-slate-400/40 relative z-10 shadow-inner overflow-hidden"
+          className="w-full h-96 rounded-2xl border border-slate-700/80 relative z-10 shadow-inner overflow-hidden"
           style={{ minHeight: '380px' }}
         />
 
         {/* Selected Coordinate Live Telemetry Popup Card */}
         {pointData && (
-          <div className={`mt-5 p-5 border rounded-2xl animate-in fade-in duration-300 ${
-            isDarkMode ? 'bg-slate-800/90 border-slate-700' : 'bg-slate-100/90 border-slate-200'
-          }`}>
+          <div className="mt-5 p-5 bg-slate-800/80 border border-slate-700 rounded-2xl animate-in fade-in duration-300">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
-                <span className="text-[11px] text-blue-500 font-bold uppercase tracking-wider">{t.inspectedPoint}</span>
-                <h4 className={`text-lg font-black ${cardHeading}`}>{activeCoords.name}</h4>
+                <span className="text-[11px] text-blue-400 font-bold uppercase tracking-wider">Inspected Geographic Point</span>
+                <h4 className="text-lg font-black text-white">{activeCoords.name}</h4>
               </div>
               <span className={`text-xs font-black uppercase px-3 py-1 rounded-full ${
-                pointData.aqi > 150 ? 'bg-red-500/20 text-red-500' : 'bg-emerald-500/20 text-emerald-500'
+                pointData.aqi > 150 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
               }`}>
-                {t.aqi} {pointData.aqi} ({pointData.aqiCategory})
+                AQI {pointData.aqi} ({pointData.aqiCategory})
               </span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className={`p-3 rounded-xl border ${innerTile}`}>
-                <span className={cardSubtext}>{t.temp}</span>
-                <div className={`text-base font-bold mt-0.5 ${cardHeading}`}>{pointData.temperature}°C</div>
-                <span className="text-[10px] text-orange-500 font-semibold">{t.feelsLike} {pointData.feelsLike}°C</span>
+              <div className="p-3 bg-slate-900 rounded-xl">
+                <span className="text-slate-400">Temperature</span>
+                <div className="text-base font-bold text-white mt-0.5">{pointData.temperature}°C</div>
+                <span className="text-[10px] text-orange-400">Feels like {pointData.feelsLike}°C</span>
               </div>
 
-              <div className={`p-3 rounded-xl border ${innerTile}`}>
-                <span className={cardSubtext}>{t.pm25}</span>
-                <div className={`text-base font-bold mt-0.5 ${cardHeading}`}>{pointData.pm25} µg/m³</div>
+              <div className="p-3 bg-slate-900 rounded-xl">
+                <span className="text-slate-400">PM 2.5 Concentration</span>
+                <div className="text-base font-bold text-white mt-0.5">{pointData.pm25} µg/m³</div>
               </div>
 
-              <div className={`p-3 rounded-xl border ${innerTile}`}>
-                <span className={cardSubtext}>{t.humidity}</span>
-                <div className={`text-base font-bold mt-0.5 ${cardHeading}`}>{pointData.humidity}%</div>
+              <div className="p-3 bg-slate-900 rounded-xl">
+                <span className="text-slate-400">Relative Humidity</span>
+                <div className="text-base font-bold text-white mt-0.5">{pointData.humidity}%</div>
               </div>
 
-              <div className={`p-3 rounded-xl border ${innerTile}`}>
-                <span className={cardSubtext}>{t.monitoringStation}</span>
-                <div className="text-xs font-bold text-emerald-500 mt-0.5 truncate">
+              <div className="p-3 bg-slate-900 rounded-xl">
+                <span className="text-slate-400">Monitoring Station</span>
+                <div className="text-xs font-bold text-emerald-400 mt-0.5 truncate">
                   {pointData.stationName || 'WAQI/Open-Meteo'}
                 </div>
               </div>

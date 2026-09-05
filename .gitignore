@@ -25,3 +25,9 @@ env/
 .DS_Store
 Thumbs.db
 *.log
+
+# Temp & Extracted folders
+o1_extracted/
+origin-react/
+origin-web/
+*.txt
